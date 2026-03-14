@@ -10,18 +10,36 @@ import { Button } from "#/components/ui/button";
 import { Badge } from "#/components/ui/badge";
 import { Link2Icon, Trash2Icon } from "lucide-react";
 
+interface SourceWithOptionalStatus extends Omit<JobSource, "status"> {
+  status?: JobSource["status"] | null;
+}
+
 interface ConnectedSourcesListProps {
-  sources: JobSource[];
+  sources: SourceWithOptionalStatus[];
   onRemove?: (id: string) => void;
 }
 
 const statusVariant = (
   status: JobSource["status"]
 ): "default" | "secondary" | "destructive" => {
-  if (status === "connected") return "default";
-  if (status === "pending") return "secondary";
+  if (status === "completed") return "default";
+  if (status === "processing") return "secondary";
   return "destructive";
 };
+
+const statusLabel: Record<JobSource["status"], string> = {
+  processing: "Processing",
+  completed: "Completed",
+  failed: "Failed",
+};
+
+function normalizeStatus(
+  status: JobSource["status"] | null | undefined
+): JobSource["status"] {
+  if (status === "processing" || status === "completed" || status === "failed")
+    return status;
+  return "processing";
+}
 
 export function ConnectedSourcesList({
   sources,
@@ -52,8 +70,8 @@ export function ConnectedSourcesList({
                 </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <Badge variant={statusVariant(source.status)}>
-                  {source.status}
+                <Badge variant={statusVariant(normalizeStatus(source.status))}>
+                  {statusLabel[normalizeStatus(source.status)]}
                 </Badge>
                 {onRemove && (
                   <Button

@@ -5,5 +5,5 @@ export interface JobSource {
   id: string;
   platform: string;
   url: string;
-  status: "connected" | "pending" | "error";
+  status: "processing" | "completed" | "failed";
 }

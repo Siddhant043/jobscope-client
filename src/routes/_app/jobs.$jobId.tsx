@@ -4,6 +4,7 @@ import {
   JobDetailsHeader,
   AIMatchExplanationCard,
 } from "#/components/jobs";
+import { SafeHtml } from "#/components/ui/SafeHtml";
 import { Skeleton } from "#/components/ui/skeleton";
 
 export const Route = createFileRoute("/_app/jobs/$jobId")({
@@ -31,9 +32,10 @@ function JobDetailsPage() {
       <div>
         <h2 className="mb-2 text-lg font-semibold">Job description</h2>
         <div className="prose prose-sm dark:prose-invert max-w-none rounded-lg border border-border bg-muted/30 p-4">
-          <p className="whitespace-pre-wrap text-sm text-muted-foreground">
-            {job.description}
-          </p>
+          <SafeHtml
+            html={job.description}
+            className="text-sm text-muted-foreground"
+          />
         </div>
       </div>
     </div>

@@ -1,6 +1,5 @@
 import type { Job } from "./job";
 import type { JobSource } from "./source";
-import type { ResumeProfile } from "./resume";
 import type { User } from "./user";
 
 export interface AuthTokens {
@@ -75,7 +74,10 @@ export interface JobFeedItem {
   score: number;
 }
 
-export type JobFeedResponseBody = JobFeedItem[];
+export interface JobFeedResponseBody {
+  items: JobFeedItem[];
+  total: number;
+}
 
 export interface JobDetailResponseBody extends Job {
   description: string;
@@ -105,7 +107,8 @@ export interface ResumeDownloadUrlResponseBody {
   url: string;
 }
 
-export interface SourceListItem extends JobSource {
+export interface SourceListItem extends Omit<JobSource, "status"> {
+  status?: JobSource["status"] | null;
   lastScrapedAt: string | null;
 }
 

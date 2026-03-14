@@ -4,7 +4,8 @@
 export const queryKeys = {
   jobs: {
     all: ["jobs"] as const,
-    list: (filters: unknown) => ["jobs", "list", filters] as const,
+    list: (filters: unknown, page: number, limit: number) =>
+      ["jobs", "list", filters, page, limit] as const,
     detail: (id: string) => ["jobs", "detail", id] as const,
   },
   resume: ["resume"] as const,
