@@ -23,8 +23,16 @@ export function SignupForm() {
   const [password, setPassword] = useState("");
   const setSession = useAuthStore((state) => state.setSession);
   const setAuthError = useAuthStore((state) => state.setAuthError);
-  const startAuthenticating = useAuthStore((state) => state.startAuthenticating);
-  const finishAuthenticating = useAuthStore((state) => state.finishAuthenticating);
+  const startAuthenticating = useAuthStore(
+    (state) => state.startAuthenticating,
+  );
+  const finishAuthenticating = useAuthStore(
+    (state) => state.finishAuthenticating,
+  );
+
+  const authError = useAuthStore((state) => state.authError);
+  const isEmailAlreadyRegistered =
+    authError?.toLowerCase().includes("already registered") ?? false;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -32,7 +40,10 @@ export function SignupForm() {
     setAuthError(null);
     try {
       const body: RegisterRequestBody = { email, password };
-      const response = await apiRequest<RegisterResponseBody, RegisterRequestBody>({
+      const response = await apiRequest<
+        RegisterResponseBody,
+        RegisterRequestBody
+      >({
         path: "/auth/register",
         method: "POST",
         body,
@@ -53,7 +64,8 @@ export function SignupForm() {
 
       router.navigate({ to: "/dashboard" });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Sign up failed";
+      const errorMessage =
+        error instanceof Error ? error.message : "Sign up failed";
       setAuthError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -70,7 +82,17 @@ export function SignupForm() {
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 mb-4">
+          {authError ? (
+            <div
+              role="alert"
+              className="rounded-lg border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+            >
+              {isEmailAlreadyRegistered
+                ? "This email is already registered. Try signing in or use a different email."
+                : authError}
+            </div>
+          ) : null}
           <div className="space-y-2">
             <Label htmlFor="signup-email">Email</Label>
             <Input
@@ -78,7 +100,10 @@ export function SignupForm() {
               type="email"
               placeholder="you@example.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (authError) setAuthError(null);
+              }}
               required
             />
           </div>
@@ -88,7 +113,10 @@ export function SignupForm() {
               id="signup-password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (authError) setAuthError(null);
+              }}
               required
             />
           </div>
@@ -98,7 +126,10 @@ export function SignupForm() {
         </CardContent>
         <CardFooter className="flex justify-center text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link to="/login" className="font-medium text-primary hover:underline">
+          <Link
+            to="/login"
+            className="font-medium text-primary hover:underline"
+          >
             Sign in
           </Link>
         </CardFooter>

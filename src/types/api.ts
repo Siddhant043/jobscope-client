@@ -93,6 +93,8 @@ export interface ResumeStatusResponseBody {
   status: "pending" | "ready" | "error";
   skills: string[] | null;
   techStack: string[] | null;
+  roles: string[] | null;
+  experience: number | null;
   seniority: string | null;
   createdAt: string;
 }

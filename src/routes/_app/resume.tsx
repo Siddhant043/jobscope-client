@@ -10,6 +10,7 @@ export const Route = createFileRoute("/_app/resume")({
 
 function ResumePage() {
   const { data: resumeStatus, isLoading } = useResumeStatus();
+  const analysisStatus = resumeStatus?.status ?? null;
 
   return (
     <div className="space-y-8">
@@ -24,15 +25,26 @@ function ResumePage() {
 
       {isLoading ? (
         <Skeleton className="h-64 w-full rounded-xl" />
-      ) : resumeStatus ? (
+      ) : analysisStatus === "pending" ? (
+        <EmptyState
+          title="Analyzing your resume"
+          description="We’re extracting skills and tech stack from your resume. This usually takes a few seconds."
+        />
+      ) : analysisStatus === "ready" && resumeStatus ? (
         <ResumeAnalysisCard
           profile={{
             skills: resumeStatus.skills ?? [],
             experience: [],
-            preferredRoles: [],
+            experienceYears: resumeStatus.experience ?? null,
+            preferredRoles: resumeStatus.roles ?? [],
             techStack: resumeStatus.techStack ?? [],
             seniority: resumeStatus.seniority ?? "",
           }}
+        />
+      ) : analysisStatus === "error" ? (
+        <EmptyState
+          title="We couldn’t analyze your resume"
+          description="Please try uploading your resume again, or use a different PDF or DOCX file."
         />
       ) : (
         <EmptyState

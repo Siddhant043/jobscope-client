@@ -13,8 +13,11 @@ export interface AuthSessionState {
 }
 
 interface AuthStoreState extends AuthSessionState {
+  /** True after persist has rehydrated from storage; prevents treating initial empty state as logged out. */
+  _hasHydrated: boolean;
   setSession: (session: AuthSessionState) => void;
   setAccessToken: (token: string | null) => void;
+  setHasHydrated: () => void;
   startAuthenticating: () => void;
   finishAuthenticating: () => void;
   setAuthError: (message: string | null) => void;
@@ -33,9 +36,11 @@ export const useAuthStore = create<AuthStoreState>()(
   persist(
     (set) => ({
       ...initialSessionState,
-      setSession: (session) => set({ ...session }),
+      _hasHydrated: false,
+      setSession: (session) => set({ ...session, _hasHydrated: true }),
       setAccessToken: (token) =>
         set((currentState) => ({ ...currentState, accessToken: token })),
+      setHasHydrated: () => set({ _hasHydrated: true }),
       startAuthenticating: () =>
         set((currentState) => ({ ...currentState, isAuthenticating: true, authError: null })),
       finishAuthenticating: () =>
@@ -51,6 +56,11 @@ export const useAuthStore = create<AuthStoreState>()(
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
       }),
+      onRehydrateStorage: () => () => {
+        requestAnimationFrame(() => {
+          useAuthStore.getState().setHasHydrated();
+        });
+      },
     }
   )
 );

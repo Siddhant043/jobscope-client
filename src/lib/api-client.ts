@@ -23,7 +23,7 @@ export class ApiError extends Error {
   }
 }
 
-function getApiBaseUrl(): string {
+export function getApiBaseUrl(): string {
   const baseUrl = import.meta.env.VITE_API_URL as string | undefined;
   if (!baseUrl) {
     throw new Error("VITE_API_URL is not configured");
@@ -31,7 +31,7 @@ function getApiBaseUrl(): string {
   return baseUrl.replace(/\/+$/, "");
 }
 
-async function refreshAccessToken(
+export async function refreshAccessToken(
   existingRefreshToken: string | null,
 ): Promise<string | null> {
   if (!existingRefreshToken) {

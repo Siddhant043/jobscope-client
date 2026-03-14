@@ -30,7 +30,7 @@ export function ResumeAnalysisCard({ profile: initialProfile }: ResumeAnalysisCa
       <CardHeader>
         <CardTitle>Resume analysis</CardTitle>
         <CardDescription>
-          Skills, tech stack, experience, and seniority from your resume.
+          Skills, tech stack, roles, experience, and seniority from your resume.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -66,13 +66,37 @@ export function ResumeAnalysisCard({ profile: initialProfile }: ResumeAnalysisCa
             ))}
           </div>
         </div>
+        {initialProfile.preferredRoles.length > 0 && (
+          <div>
+            <p className="text-xs font-medium text-muted-foreground">Roles</p>
+            <div className="mt-1 flex flex-wrap gap-1.5">
+              {initialProfile.preferredRoles.map((role) => (
+                <Badge key={role} variant="outline">
+                  {role}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
         <div>
           <p className="text-xs font-medium text-muted-foreground">Experience</p>
-          <ul className="mt-1 list-inside list-disc text-sm text-muted-foreground">
-            {initialProfile.experience.map((e, i) => (
-              <li key={i}>{e}</li>
-            ))}
-          </ul>
+          <div className="mt-1 text-sm text-muted-foreground">
+            {initialProfile.experienceYears != null && initialProfile.experienceYears > 0 ? (
+              <p>
+                {initialProfile.experienceYears} {initialProfile.experienceYears === 1 ? "year" : "years"} of experience
+              </p>
+            ) : null}
+            {initialProfile.experience.length > 0 ? (
+              <ul className="list-inside list-disc">
+                {initialProfile.experience.map((e, i) => (
+                  <li key={i}>{e}</li>
+                ))}
+              </ul>
+            ) : null}
+            {((initialProfile.experienceYears == null || initialProfile.experienceYears <= 0) && initialProfile.experience.length === 0) && (
+              <p className="text-muted-foreground/70">No experience data</p>
+            )}
+          </div>
         </div>
         <div>
           <p className="text-xs font-medium text-muted-foreground">Seniority</p>
